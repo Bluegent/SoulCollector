@@ -65,7 +65,7 @@ namespace BotClient.Discord
                 Channel = GetChannel();
             }
             IsReady = true;
-            WriteMessage($"The ***Soul Master*** awakens...");
+            //WriteMessage($"The ***Soul Master*** awakens...");
             ReadyAction?.Invoke();
 
             return Task.CompletedTask;
@@ -73,14 +73,17 @@ namespace BotClient.Discord
 
         private Task MessageReceived(SocketMessage message)
         {
-            Console.WriteLine(message.Content);
+            if (message.Content.Equals("ping") && !message.Channel.Equals(Channel))
+            {
+                message.Author.SendMessageAsync("pong");
+            }
             return Task.CompletedTask;
         }
 
 
         private Task DiscordLog(LogMessage msg)
         {
-            Console.WriteLine(msg.ToString());
+            Console.WriteLine(msg.Message);
             return Task.CompletedTask;
         }
 
