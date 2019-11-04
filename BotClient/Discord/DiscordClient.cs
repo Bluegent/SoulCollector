@@ -71,11 +71,11 @@ namespace BotClient.Discord
             return Task.CompletedTask;
         }
 
-        private Task MessageReceived(SocketMessage message)
+        private async Task<Task> MessageReceived(SocketMessage message)
         {
             if (message.Content.Equals("ping") && !message.Channel.Equals(Channel))
             {
-                message.Author.SendMessageAsync("pong");
+                await message.Author.SendMessageAsync("pong");
             }
             return Task.CompletedTask;
         }
