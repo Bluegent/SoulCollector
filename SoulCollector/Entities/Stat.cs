@@ -20,6 +20,12 @@
         public int Value { get; private set; }
         private List<StatModifier> _modifiers;
 
+
+        public static implicit  operator int(Stat s)
+        {
+            return s.Value;
+        }
+
         public Stat(StatType type, int baseValue)
         {
             _modifiers = new List<StatModifier>();

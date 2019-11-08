@@ -15,6 +15,14 @@ namespace SoulTester.Entities
         }
 
         [TestMethod]
+        public void CanConvertToInt()
+        {
+            int result = _testableStat;
+            int expected = _testableStat.Value;
+            Assert.AreEqual(expected,result);
+        }
+
+        [TestMethod]
         public void CanAddFlatModifier()
         {
             int added = 10;
@@ -74,6 +82,57 @@ namespace SoulTester.Entities
             _testableStat.AddModifier(mod);
             
             Assert.AreEqual(expected, _testableStat.Value);
+        }
+
+        [TestMethod]
+        public void CanRemovePercentageModifier()
+        {
+            float added = 0.1f;
+            int beforeAdd = _testableStat.Value;
+            int expected = _testableStat.Value + (int)(added * _testableStat.Base);
+            StatModifier mod = new StatModifier(added);
+
+            _testableStat.AddModifier(mod);
+            Assert.AreEqual(expected, _testableStat.Value);
+
+            _testableStat.RemoveModifier(mod);
+            Assert.AreEqual(beforeAdd, _testableStat.Value);
+        }
+
+        [TestMethod]
+        public void CanAddMixedModifiers()
+        {
+            float added = 0.1f;
+            int flatAdded = 20;
+            int expected = _testableStat.Value + (int)(added * _testableStat.Base) + flatAdded;
+            StatModifier mod = new StatModifier(added);
+            StatModifier mod2 = new StatModifier(flatAdded);
+            _testableStat.AddModifier(mod);
+            _testableStat.AddModifier(mod2);
+
+            Assert.AreEqual(expected, _testableStat.Value);
+        }
+
+
+        [TestMethod]
+        public void CanRemoveMixedModifiers()
+        {
+            float added = 0.1f;
+            
+            int flatAdded = 20;
+            int expected = _testableStat.Value + (int)(added * _testableStat.Base) + flatAdded;
+            int beforePercentag = _testableStat.Value + flatAdded;
+            StatModifier mod = new StatModifier(added);
+            StatModifier mod2 = new StatModifier(flatAdded);
+
+            _testableStat.AddModifier(mod);
+            _testableStat.AddModifier(mod2);
+            Assert.AreEqual(expected, _testableStat.Value);
+
+            _testableStat.RemoveModifier(mod);
+            Assert.AreEqual(beforePercentag, _testableStat.Value);
+
+
         }
     }
 }
