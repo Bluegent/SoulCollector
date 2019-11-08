@@ -1,40 +1,36 @@
 ﻿namespace SoulCollector.Entities
 {
 
-    public enum ModifierType
+    public interface StatModifier
     {
-        Flat,
-        Percentage
+        int GetValue(int baseValue);
     }
-
-    public class StatModifier
+    public class FlatModifier : StatModifier
     {
-        private ModifierType _type;
         private int _value;
 
-        public StatModifier(int value)
+        public FlatModifier(int value)
         {
             _value = value;
-            _type = ModifierType.Flat;
         }
+        public int GetValue(int baseValue)
+        {
+            return _value;
+        }
+    }
 
-        public StatModifier(float value)
+    public class PercentageModifier : StatModifier
+    {
+        private int _value;
+        public PercentageModifier(float value)
         {
             _value = (int)(value * 1000.0f);
-            _type = ModifierType.Percentage;
         }
 
         public int GetValue(int baseValue)
         {
-            switch (_type)
-            {
-                case ModifierType.Flat:
-                    return _value;
-                case ModifierType.Percentage:
-                    return (int)(_value / 1000.0f * baseValue);
-                default:
-                    return 0;
-            }
+            return (int)(_value / 1000.0f * baseValue);
         }
+
     }
 }

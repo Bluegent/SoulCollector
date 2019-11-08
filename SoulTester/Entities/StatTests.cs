@@ -27,7 +27,7 @@ namespace SoulTester.Entities
         {
             int added = 10;
             int expected = _testableStat.Value + added;
-            StatModifier mod = new StatModifier(added);
+            StatModifier mod = new FlatModifier(added);
             _testableStat.AddModifier(mod);
             
             Assert.AreEqual(expected, _testableStat.Value);
@@ -38,7 +38,7 @@ namespace SoulTester.Entities
         {
             int added = 10;
             int expected = _testableStat.Value + added * 2;
-            StatModifier mod = new StatModifier(added);
+            StatModifier mod = new FlatModifier(added);
             _testableStat.AddModifier(mod);
             _testableStat.AddModifier(mod);
            
@@ -52,7 +52,7 @@ namespace SoulTester.Entities
             int beforeAdd = _testableStat.Value;
             int expected = _testableStat.Value + added;
 
-            StatModifier mod = new StatModifier(added);
+            StatModifier mod = new FlatModifier(added);
 
             _testableStat.AddModifier(mod);
             Assert.AreEqual(expected, _testableStat.Value);
@@ -66,7 +66,7 @@ namespace SoulTester.Entities
         {
             float added = 0.1f;
             int expected = _testableStat.Value + (int)(added * _testableStat.Base);
-            StatModifier mod = new StatModifier(added);
+            StatModifier mod = new PercentageModifier(added);
             _testableStat.AddModifier(mod);
             
             Assert.AreEqual(expected, _testableStat.Value);
@@ -77,7 +77,7 @@ namespace SoulTester.Entities
         {
             float added = 0.1f;
             int expected = _testableStat.Value + (int)(added * 2 * _testableStat.Base);
-            StatModifier mod = new StatModifier(added);
+            StatModifier mod = new PercentageModifier(added);
             _testableStat.AddModifier(mod);
             _testableStat.AddModifier(mod);
             
@@ -90,7 +90,7 @@ namespace SoulTester.Entities
             float added = 0.1f;
             int beforeAdd = _testableStat.Value;
             int expected = _testableStat.Value + (int)(added * _testableStat.Base);
-            StatModifier mod = new StatModifier(added);
+            StatModifier mod = new PercentageModifier(added);
 
             _testableStat.AddModifier(mod);
             Assert.AreEqual(expected, _testableStat.Value);
@@ -105,8 +105,8 @@ namespace SoulTester.Entities
             float added = 0.1f;
             int flatAdded = 20;
             int expected = _testableStat.Value + (int)(added * _testableStat.Base) + flatAdded;
-            StatModifier mod = new StatModifier(added);
-            StatModifier mod2 = new StatModifier(flatAdded);
+            StatModifier mod = new PercentageModifier(added);
+            StatModifier mod2 = new FlatModifier(flatAdded);
             _testableStat.AddModifier(mod);
             _testableStat.AddModifier(mod2);
 
@@ -122,8 +122,8 @@ namespace SoulTester.Entities
             int flatAdded = 20;
             int expected = _testableStat.Value + (int)(added * _testableStat.Base) + flatAdded;
             int beforePercentag = _testableStat.Value + flatAdded;
-            StatModifier mod = new StatModifier(added);
-            StatModifier mod2 = new StatModifier(flatAdded);
+            StatModifier mod = new PercentageModifier(added);
+            StatModifier mod2 = new FlatModifier(flatAdded);
 
             _testableStat.AddModifier(mod);
             _testableStat.AddModifier(mod2);
