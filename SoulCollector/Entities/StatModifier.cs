@@ -12,10 +12,16 @@
         private ModifierType _type;
         private int _value;
 
-        public StatModifier(ModifierType type, int value)
+        public StatModifier(int value)
         {
             _value = value;
-            _type = type;
+            _type = ModifierType.Flat;
+        }
+
+        public StatModifier(float value)
+        {
+            _value = (int)(value * 1000.0f);
+            _type = ModifierType.Percentage;
         }
 
         public int GetValue(int baseValue)
@@ -25,7 +31,7 @@
                 case ModifierType.Flat:
                     return _value;
                 case ModifierType.Percentage:
-                    return (int)(_value / 100.0f * baseValue);
+                    return (int)(_value / 1000.0f * baseValue);
                 default:
                     return 0;
             }

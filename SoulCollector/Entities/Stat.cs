@@ -15,7 +15,7 @@
     public class Stat
     {
         public StatType Type { get; private set; }
-        private int _base;
+        public int Base { get; private set; }
 
         public int Value { get; private set; }
         private List<StatModifier> _modifiers;
@@ -24,16 +24,16 @@
         {
             _modifiers = new List<StatModifier>();
             Type = type;
-            _base = baseValue;
+            Base = baseValue;
             Recalculate();
         }
 
         private void Recalculate()
         {
-            Value = _base;
+            Value = Base;
             foreach (StatModifier mod in _modifiers)
             {
-                Value += mod.GetValue(_base);
+                Value += mod.GetValue(Base);
             }
         }
 
@@ -46,6 +46,8 @@
         public void RemoveModifier(StatModifier mod)
         {
             _modifiers.Remove(mod);
+            Recalculate();
+            
         }
     }
 }
