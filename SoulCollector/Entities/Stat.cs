@@ -12,36 +12,16 @@
 
     }
 
-    public class Stat
+    public abstract class ModifiableValue
     {
-        public StatType Type { get; private set; }
-        public int Base { get; private set; }
+        protected List<StatModifier> _modifiers;
 
-        public int Value { get; private set; }
-        private List<StatModifier> _modifiers;
-
-
-        public static implicit  operator int(Stat s)
-        {
-            return s.Value;
-        }
-
-        public Stat(StatType type, int baseValue)
+        public ModifiableValue()
         {
             _modifiers = new List<StatModifier>();
-            Type = type;
-            Base = baseValue;
-            Recalculate();
         }
 
-        private void Recalculate()
-        {
-            Value = Base;
-            foreach (StatModifier mod in _modifiers)
-            {
-                Value += mod.GetValue(Base);
-            }
-        }
+        protected abstract void Recalculate();
 
         public void AddModifier(StatModifier mod)
         {
@@ -53,7 +33,38 @@
         {
             _modifiers.Remove(mod);
             Recalculate();
-            
+
+        }
+    }
+
+    public class Stat : ModifiableValue
+    {
+        public StatType Type { get; private set; }
+        public int Base { get; private set; }
+
+        public int Value { get; private set; }
+
+
+        public static implicit operator int(Stat s)
+        {
+            return s.Value;
+        }
+
+        public Stat(StatType type, int baseValue)
+        {
+
+            Type = type;
+            Base = baseValue;
+            Recalculate();
+        }
+
+        protected sealed override void Recalculate()
+        {
+            Value = Base;
+            foreach (StatModifier mod in _modifiers)
+            {
+                Value += mod.GetValue(Base);
+            }
         }
     }
 }
