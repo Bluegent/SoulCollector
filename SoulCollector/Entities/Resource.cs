@@ -12,7 +12,7 @@ namespace SoulCollector.Entities
         public int Current { get; private set; }
         public int BaseMaxValue { get; private set; }
         public int MaxValue { get; private set; }
-        public ResourceType Type { get; private set; }
+        public ResourceType Type { get; }
 
 
         public void SetBaseValue(int value)
