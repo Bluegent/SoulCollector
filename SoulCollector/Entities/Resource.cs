@@ -15,17 +15,18 @@ namespace SoulCollector.Entities
         public ResourceType Type { get; private set; }
 
 
+        public void SetBaseValue(int value)
+        {
+            BaseMaxValue = value;
+            Recalculate();
+        }
+
         public Resource(ResourceType type, int startValue, int maxValue)
         {
             Current = startValue;
             BaseMaxValue = maxValue;
             Type = type;
             Recalculate();
-        }
-
-        public void Recalculate(long tickTime)
-        {
-            Current = Utils.Math.Clamp(Current, 0, MaxValue);
         }
 
         protected sealed override void Recalculate()
@@ -36,6 +37,7 @@ namespace SoulCollector.Entities
             {
                 MaxValue += mod.GetValue(BaseMaxValue);
             }
+            Current = Utils.Math.Clamp(Current, 0, MaxValue);
         }
     }
 }
