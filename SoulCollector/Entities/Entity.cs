@@ -1,7 +1,63 @@
 ﻿using System.Collections.Generic;
+using System.Net.Mail;
 
 namespace SoulCollector.Entities
 {
+
+    public class Stage
+    {
+        private Entity _parent;
+        private List<IEffect> _effects;
+
+        public Stage(Entity parent)
+        {
+            _parent = parent;
+            _effects = new List<IEffect>();
+        }
+
+        public void AddEffect(IEffect effect)
+        {
+            _effects.Add(effect);
+        }
+
+        public void RemoveEffect(IEffect effect)
+        {
+            _effects.Remove(effect);
+        }
+
+        public void ExecuteEffects(Entity[] targets)
+        {
+            foreach (Entity target in targets)
+                ExecuteEffects(target);
+        }
+
+        public void ExecuteEffects(Entity target)
+        {
+            foreach (IEffect effect in _effects)
+                effect.Apply(_parent, target);
+        }
+    }
+
+    public class CombatEvent
+    {
+        public Stage Pre { get; }
+        public Stage Stage { get; }
+        public Stage Post { get; }
+
+        public CombatEvent(Entity parent)
+        {
+            Pre = new Stage(parent);
+            Stage = new Stage(parent);
+            Post = new Stage(parent);
+        }
+
+    }
+
+
+    public class DamageInstance
+    {
+        public int Amount;
+    }
 
     public interface IEffect
     {
@@ -10,65 +66,49 @@ namespace SoulCollector.Entities
 
     public abstract class Entity
     {
-        public List<IEffect> BeforeAttackEffects;
-        public List<IEffect> AttackEffects;
-        public List<IEffect> AfterAttackEffects;
-        public List<IEffect> BeforeHitEffects;
-        public List<IEffect> HitEffects;
-        public List<IEffect> AfterHitEffects;
-
+        protected CombatEvent _hitState;
+        protected CombatEvent _attackState;
+        protected CombatEvent _battleState;
 
         public Entity()
         {
-            BeforeAttackEffects = new List<IEffect>();
-            AttackEffects = new List<IEffect>();
-            AfterAttackEffects = new List<IEffect>();
-            BeforeHitEffects = new List<IEffect>();
-            HitEffects = new List<IEffect>();
-            AfterHitEffects = new List<IEffect>();
+            _hitState = new CombatEvent(this);
+            _attackState = new CombatEvent(this);
+            _battleState = new CombatEvent(this);
         }
 
-
-        private void RunEffects(List<IEffect> effects, Entity[] targets)
+        public void EnterBattle(Entity[] targets)
         {
-            foreach (IEffect effect in effects)
-                foreach (Entity target in targets)
-                    effect.Apply(this, target);
+            _battleState.Pre.ExecuteEffects(targets);
         }
 
-        public void BeforeAttackState(Entity[] targets)
+        public void LeaveBattle(Entity[] targets)
         {
-            RunEffects(BeforeHitEffects,targets);
+            _battleState.Post.ExecuteEffects(targets);
         }
 
-        public void AttackState(Entity[] targets)
+        public void Attack(Entity[] targets)
         {
-            RunEffects(AttackEffects, targets);
+            _attackState.Pre.ExecuteEffects(targets);
+            AttackImpl(targets);
+            _attackState.Stage.ExecuteEffects(targets);
+            _attackState.Post.ExecuteEffects(targets);
         }
 
-        public void AfterAttackState(Entity[] targets)
+        protected abstract void AttackImpl(Entity[] targets);
+
+
+        public void TakeDamage(DamageInstance damage, Entity source)
         {
-            RunEffects(AfterAttackEffects, targets);
+            _hitState.Pre.ExecuteEffects(source);
+            TakeDamageImpl(damage, source);
         }
 
-        public void BeforeDamagedState(Entity[] targets)
-        {
-            RunEffects(BeforeHitEffects, targets);
-        }
-
-        public void DamagedState(Entity[] targets)
-        {
-            RunEffects(HitEffects, targets);
-        }
-
-        public void AfterDamagedState(Entity[] targets)
-        {
-            RunEffects(AfterHitEffects, targets);
-        }
-
+        protected abstract void TakeDamageImpl(DamageInstance damage, Entity source);
         public abstract void Update(long gameTick);
     }
-    public class BaseEntity
+
+    public class BaseEntity : Entity
     {
         protected Dictionary<StatType, Stat> Stats;
         protected Dictionary<ResourceType, Resource> Resources;
@@ -81,5 +121,23 @@ namespace SoulCollector.Entities
             Resources.Add(health.Type, health);
         }
 
+        protected override void AttackImpl(Entity[] targets)
+        {
+            foreach (Entity entity in targets)
+            {
+                entity.TakeDamage(new DamageInstance() { Amount = 10 }, this);
+            }
+        }
+
+        protected override void TakeDamageImpl(DamageInstance damage, Entity source)
+        {
+            Resources[ResourceType.Health].Modify(damage.Amount);
+        }
+
+        public override void Update(long gameTick)
+        {
+            throw new System.NotImplementedException();
+        }
     }
+
 }

@@ -15,6 +15,12 @@ namespace SoulCollector.Entities
         public ResourceType Type { get; }
 
 
+        public void Modify(int amount)
+        {
+            Current -= amount;
+            Utils.Math.Clamp(Current, 0, MaxValue);
+        }
+
         public void SetBaseValue(int value)
         {
             BaseMaxValue = value;
