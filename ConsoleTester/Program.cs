@@ -35,7 +35,7 @@ namespace ConsoleTester
         }
         static void Main(string[] args)
         {
-            string[] names = { "Costel", "Gigel", "Ion", "Vasile", "Maria", "Ioana", "Popescu", "Garcea","Gabriela"};
+            string[] names = { "Joseph", "Jotaro", "Jonathan", "Giorno", "Jolyne", "Josuke", "Gappy"};
             ConsoleLogger log = new ConsoleLogger();
             Dependencies dep = new Dependencies(log);
             int playerNum = 4;

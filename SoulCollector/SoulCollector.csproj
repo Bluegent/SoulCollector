@@ -46,7 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Combat\BattleState.cs" />
+    <Compile Include="Combat\CombatEvent.cs" />
+    <Compile Include="Combat\CombatStage.cs" />
+    <Compile Include="Combat\DamageInstance.cs" />
+    <Compile Include="Entities\AttackDamage.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Party.cs" />
     <Compile Include="Entities\Resource.cs" />
     <Compile Include="Entities\Stat.cs" />
     <Compile Include="Entities\StatModifier.cs" />
@@ -54,6 +60,7 @@
     <Compile Include="GameControllers\Dependencies.cs" />
     <Compile Include="Output\Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SoulEffects\Effect.cs" />
     <Compile Include="Utils\Math.cs" />
   </ItemGroup>
   <ItemGroup>
