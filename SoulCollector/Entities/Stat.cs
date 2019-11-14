@@ -9,6 +9,7 @@
         Critical, //chance to do a critical strike
         CriticalMultiplier, //damage multiplier for criticals
         DodgeChance, //chance to dodge attacks
+        AttackDelay, //ticks between two attacks
 
     }
 

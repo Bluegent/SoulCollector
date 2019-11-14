@@ -2,6 +2,10 @@
 
 namespace SoulCollector.Entities
 {
+    using System.Runtime.Versioning;
+
+    using SoulCollector.GameControllers;
+    using SoulCollector.Output;
 
     public class Stage
     {
@@ -65,6 +69,11 @@ namespace SoulCollector.Entities
     {
         public int Amount;
         public DamageType Type;
+
+        public override string ToString()
+        {
+            return $"{Amount} {Type} Damage";
+        }
     }
 
     public interface IEffect
@@ -73,57 +82,87 @@ namespace SoulCollector.Entities
         void ApplyAlly(Entity source, Entity ally);
     }
 
+
+    public class BattleState
+    {
+        public Entity[] Allies;
+        public Entity[] Enemies;
+
+        public bool IsInBattle;
+        public long NextAttackTick;
+
+
+        public BattleState()
+        {
+            Reset();
+            
+        }
+
+        public void Reset()
+        {
+            IsInBattle = false;
+            Allies = null;
+            Enemies = null;
+            NextAttackTick = 0;
+        }
+
+
+    }
+
     public abstract class Entity
     {
         protected CombatEvent _hitState;
         protected CombatEvent _attackState;
         protected CombatEvent _battleState;
 
-        private Entity[] _currentBattleAllies;
-        private Entity[] _currentBattleEnemies;
-        private bool _isInBattle;
+        public string Name;
+        public ILogger Log;
+        protected BattleState _state;
 
-        public Entity()
+
+        public Entity(Dependencies dep)
         {
+            Log = dep.Log;
             _hitState = new CombatEvent(this);
             _attackState = new CombatEvent(this);
             _battleState = new CombatEvent(this);
-            _isInBattle = false;
+            _state = new BattleState();
+            Name = "";
+
         }
+
 
 
         public void EnterBattle(Entity[] allies, Entity[] enemies)
         {
-            if (_isInBattle)
+            if (_state.IsInBattle)
                 return;
-            _currentBattleEnemies = enemies;
+            _state.Enemies = enemies;
             List<Entity> party = new List<Entity>(allies);
             party.Remove(this);
-            _currentBattleAllies = party.ToArray();
-            _battleState.Pre.ExecuteEffects(_currentBattleAllies, _currentBattleEnemies);
-            _isInBattle = true;
+            _state.Allies = party.ToArray();
+            _battleState.Pre.ExecuteEffects(_state.Allies, _state.Enemies);
+            _state.IsInBattle = true;
         }
 
         public void LeaveBattle()
         {
-            if (!_isInBattle)
+            if (!_state.IsInBattle)
                 return;
-            _battleState.Post.ExecuteEffects(_currentBattleAllies, _currentBattleEnemies);
-            _currentBattleAllies = null;
-            _currentBattleEnemies = null;
-            _isInBattle = false;
+            _battleState.Post.ExecuteEffects(_state.Allies, _state.Enemies);
+            _state.Reset();
         }
 
         public void Attack(Entity[] targets)
         {
-            _attackState.Pre.ExecuteEffects(_currentBattleAllies, _currentBattleEnemies);
+            _attackState.Pre.ExecuteEffects(_state.Allies, _state.Enemies);
             foreach (Entity target in targets)
             {
                 AttackImpl(target);
             }
 
-            _attackState.Stage.ExecuteEffects(_currentBattleAllies, _currentBattleEnemies);
-            _attackState.Post.ExecuteEffects(_currentBattleAllies, _currentBattleEnemies);
+            _attackState.Stage.ExecuteEffects(_state.Allies, _state.Enemies);
+            _attackState.Post.ExecuteEffects(_state.Allies, _state.Enemies);
         }
 
         protected abstract void AttackImpl(Entity target);
@@ -131,10 +170,10 @@ namespace SoulCollector.Entities
 
         public void TakeDamage(DamageInstance damage, Entity source)
         {
-            _hitState.Pre.ExecuteEffects(_currentBattleAllies, _currentBattleEnemies);
+            _hitState.Pre.ExecuteEffects(_state.Allies, _state.Enemies);
             TakeDamageImpl(damage, source);
-            _hitState.Stage.ExecuteEffects(_currentBattleAllies, _currentBattleEnemies);
-            _hitState.Post.ExecuteEffects(_currentBattleAllies, _currentBattleEnemies);
+            _hitState.Stage.ExecuteEffects(_state.Allies, _state.Enemies);
+            _hitState.Post.ExecuteEffects(_state.Allies, _state.Enemies);
         }
 
         protected abstract void TakeDamageImpl(DamageInstance damage, Entity source);
@@ -183,19 +222,29 @@ namespace SoulCollector.Entities
             return result;
         }
     }
+
+
     public class BaseEntity : Entity
     {
         protected Dictionary<StatType, Stat> Stats;
         protected Dictionary<ResourceType, Resource> Resources;
         private AttackDamage _physicalDamage;
 
-        public BaseEntity()
+        public BaseEntity(Dependencies dep) : base(dep)
         {
             Stats = new Dictionary<StatType, Stat>();
+            Stat delay = new Stat(StatType.AttackDelay,100);
+            Stats.Add(delay.Type,delay);
             _physicalDamage = new AttackDamage(DamageType.Physical, 10, 20);
             Resources = new Dictionary<ResourceType, Resource>();
             Resource health = new Resource(ResourceType.Health, 100, 100);
             Resources.Add(health.Type, health);
+        }
+
+
+        public override string ToString()
+        {
+            return $"{Name} - {Resources[ResourceType.Health]}";
         }
 
         protected override void AttackImpl(Entity targets)
@@ -206,12 +255,24 @@ namespace SoulCollector.Entities
 
         protected override void TakeDamageImpl(DamageInstance damage, Entity source)
         {
+            if (!IsAlive())
+                return;
             Resources[ResourceType.Health].Modify(damage.Amount);
+            Log.Log($"{this} took {damage} from {source.Name}");
+            if(!IsAlive())
+                Log.Log($"{Name} has died.");
         }
 
         public override void Update(long gameTick)
         {
-            throw new System.NotImplementedException();
+            if (!IsAlive())
+                return;
+            if (gameTick >= _state.NextAttackTick)
+            {
+                int target = Utils.Math.Random(0, _state.Enemies.Length);
+                AttackImpl(_state.Enemies[target]);
+                _state.NextAttackTick += Stats[StatType.AttackDelay];
+            }
         }
 
         public override bool IsAlive()

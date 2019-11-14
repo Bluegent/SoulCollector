@@ -50,5 +50,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SoulCollector\SoulCollector.csproj">
+      <Project>{0943deff-75a5-47eb-b4ed-83fd355a179f}</Project>
+      <Name>SoulCollector</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
