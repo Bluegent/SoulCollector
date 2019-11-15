@@ -6,7 +6,7 @@ namespace SoulCollector.Output
     {
         public void Log(string message)
         {
-            Console.WriteLine(message);
+            //Console.WriteLine(message);
         }
 
         public void Flush()

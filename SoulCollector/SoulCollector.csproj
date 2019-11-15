@@ -61,6 +61,7 @@
     <Compile Include="Entities\StatModifier.cs" />
     <Compile Include="GameControllers\BattleController.cs" />
     <Compile Include="GameControllers\Dependencies.cs" />
+    <Compile Include="Output\BattleLog.cs" />
     <Compile Include="Output\ConsoleLogger.cs" />
     <Compile Include="Output\DelayedLogger.cs" />
     <Compile Include="Output\Logger.cs" />
