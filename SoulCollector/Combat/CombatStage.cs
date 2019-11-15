@@ -28,21 +28,13 @@ namespace SoulCollector.Combat
         public void ExecuteEffects(Entity[] allies, Entity[] enemies)
         {
             foreach (Entity target in allies)
-                ExecuteForAlly(target);
-            foreach (Entity target in enemies)
-                ExecuteForEnemy(target);
+                Execute(target);
         }
 
-        public void ExecuteForAlly(Entity ally)
+        public void Execute(Entity ally)
         {
             foreach (IEffect effect in _effects)
-                effect.ApplyEnemy(_parent, ally);
-        }
-
-        public void ExecuteForEnemy(Entity enemy)
-        {
-            foreach (IEffect effect in _effects)
-                effect.ApplyAlly(_parent, enemy);
+                effect.Apply(_parent.GetState());
         }
     }
 

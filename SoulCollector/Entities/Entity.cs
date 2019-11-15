@@ -17,6 +17,10 @@ namespace SoulCollector.Entities
         public ILogger Log;
         protected BattleState State;
 
+        public BattleState GetState()
+        {
+            return State;
+        }
         protected Entity(Dependencies dep)
         {
             Log = dep.Log;

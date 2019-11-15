@@ -2,10 +2,10 @@
 
 namespace SoulCollector.SoulEffects
 {
+    using SoulCollector.Combat;
 
     public interface IEffect
     {
-        void ApplyEnemy(Entity source, Entity enemy);
-        void ApplyAlly(Entity source, Entity ally);
+        void Apply(BattleState state);
     }
 }
