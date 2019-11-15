@@ -25,17 +25,12 @@ namespace SoulCollector.Combat
             _effects.Remove(effect);
         }
 
-        public void ExecuteEffects(Entity[] allies, Entity[] enemies)
-        {
-            foreach (Entity target in allies)
-                Execute(target);
-        }
-
-        public void Execute(Entity ally)
+        public void ExecuteEffects()
         {
             foreach (IEffect effect in _effects)
                 effect.Apply(_parent.GetState());
         }
+
     }
 
 }

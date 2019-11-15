@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Combat\BattleState.cs" />
+    <Compile Include="Combat\BattleTracker.cs" />
     <Compile Include="Combat\CombatEvent.cs" />
     <Compile Include="Combat\CombatStage.cs" />
     <Compile Include="Combat\DamageInstance.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Output\Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SoulEffects\Effect.cs" />
+    <Compile Include="SoulEffects\LifeStealEffect.cs" />
     <Compile Include="Utils\Math.cs" />
   </ItemGroup>
   <ItemGroup>

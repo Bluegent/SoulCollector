@@ -39,7 +39,7 @@ namespace SoulCollector.Entities
 
         public void Modify(int amount)
         {
-            Current -= amount;
+            Current += amount;
             Current = Utils.Math.Clamp(Current, 0, MaxValue);
         }
 

@@ -13,11 +13,12 @@
     public class DamageInstance
     {
         public int Amount;
+        public int TrueAmount;
         public DamageType Type;
 
         public override string ToString()
         {
-            return $"{Amount} {Type} Damage";
+            return $"{TrueAmount} {Type} Damage";
         }
     }
 }

@@ -6,6 +6,7 @@ namespace ConsoleTester
     using SoulCollector.Entities;
     using SoulCollector.GameControllers;
     using SoulCollector.Output;
+    using SoulCollector.SoulEffects;
     using SoulCollector.Utils;
 
     class Program
@@ -38,7 +39,7 @@ namespace ConsoleTester
             string[] names = { "Joseph", "Jotaro", "Jonathan", "Giorno", "Jolyne", "Josuke", "Gappy"};
             ConsoleLogger log = new ConsoleLogger();
             Dependencies dep = new Dependencies(log);
-            int playerNum = 4;
+            int playerNum = 2;
             int[] nameNums = new int[playerNum];
             Entity[] players = new Entity[playerNum];
             for (int i = 0; i < players.Length; ++i)
@@ -67,6 +68,8 @@ namespace ConsoleTester
                 }
             }
 
+            LifeStealEffect eff = new LifeStealEffect(dep,p1[0]);
+            p1[0].AddPostHitEffect(eff);
             Party par1 = new Party(p1.ToArray());
             Party par2 = new Party(p2.ToArray());
             BattleController bc = new BattleController(par1, par2, dep);
